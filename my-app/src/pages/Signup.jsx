@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Signup = () => {
   const [form, setForm] = useState({
@@ -12,18 +13,44 @@ const Signup = () => {
     agreeToTerms: false,
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!form.agreeToTerms) {
       alert("You must agree to the terms and conditions.");
       return;
     }
-    console.log(form);
+
+    if (form.password !== form.confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    try {
+      
+
+      const response = await axios.post('http://localhost:8081/api/auth/register', {
+        email: form.email,
+        password: form.password,
+        birthdate: form.birthdate,
+        cin: form.cin,
+        phone: form.phone,
+      });
+
+      console.log("Registration successful:", response.data);
+      alert("Account created successfully!");
+      navigate('/login');
+    } catch (error) {
+      console.error("Registration failed:", error);
+      alert(error.response?.data?.message || "Registration failed.");
+    }
   };
 
   return (
