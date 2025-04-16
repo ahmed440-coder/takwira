@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css'; // Make sure to import the styles
+import 'react-datepicker/dist/react-datepicker.css';
 
 const Booking = () => {
   const [form, setForm] = useState({
@@ -15,6 +15,31 @@ const Booking = () => {
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // 🧠 Fetch user data from backend (simulate API call)
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Simulated API call
+        const response = await fetch('/api/user/profile');
+        const data = await response.json();
+        
+        setForm((prevForm) => ({
+          ...prevForm,
+          name: data.name || '',
+          email: data.email || '',
+          phone: data.phone || '',
+        }));
+        setLoading(false);
+      } catch (error) {
+        console.error('Failed to load user data', error);
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -33,11 +58,26 @@ const Booking = () => {
 
     setIsSuccess(true);
     setIsError(false);
-    console.log(form); // Normally, this would send the data to an API or backend
+
+    // Here you would send the booking to your backend
+    console.log('Booking form submitted:', form);
   };
 
+  // ⏰ Updated and expanded evening time slots
+  const timeSlots = [
+    '9:00 AM - 11:00 AM',
+    '11:00 AM - 1:00 PM',
+    '1:00 PM - 3:00 PM',
+    '3:00 PM - 5:00 PM',
+    '5:00 PM - 7:00 PM',
+    '7:00 PM - 9:00 PM',
+    '9:00 PM - 11:00 PM',
+  ];
+
+  if (loading) return <div className="text-white text-center mt-20">Loading profile...</div>;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-red-800 text-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-red-800 text-white flex items-center justify-center px-4 pt-40">
       <div className="w-full max-w-lg bg-black p-8 rounded-xl shadow-2xl">
         <h2 className="text-3xl font-bold text-center mb-6">Book Your Slot</h2>
 
@@ -101,10 +141,11 @@ const Booking = () => {
             required
           >
             <option value="">Select Time Slot</option>
-            <option value="9:00 AM - 11:00 AM">9:00 AM - 11:00 AM</option>
-            <option value="11:00 AM - 1:00 PM">11:00 AM - 1:00 PM</option>
-            <option value="1:00 PM - 3:00 PM">1:00 PM - 3:00 PM</option>
-            <option value="3:00 PM - 5:00 PM">3:00 PM - 5:00 PM</option>
+            {timeSlots.map((slot) => (
+              <option key={slot} value={slot}>
+                {slot}
+              </option>
+            ))}
           </select>
 
           {/* Notes */}

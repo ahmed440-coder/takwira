@@ -3,7 +3,7 @@ import { FaUser, FaCogs, FaFootballBall } from 'react-icons/fa';
 
 const Dashboard = ({ role = 'user' }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-red-800 text-white py-10 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-red-800 text-white py-10 px-4 pt-40">
       <div className="max-w-6xl mx-auto space-y-8">
         <h1 className="text-4xl font-bold text-center mb-6">Dashboard</h1>
 

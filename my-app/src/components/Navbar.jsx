@@ -56,13 +56,13 @@ function Navbar() {
         <img
           src={Logo}
           alt="Logo"
-          className="h-12 w-auto transform hover:scale-110 transition duration-300"
+          className="h-17 w-auto transform hover:scale-110 transition duration-300"
         />
       </div>
 
       {/* Centered Nav Links for desktop */}
-      <div className={`hidden lg:flex justify-center items-center gap-6 px-40 py-2 w-fit rounded-xl bg-white/10 backdrop-blur-md shadow-md border border-white/0 flex-grow`}>
-        <div className="flex gap-20">
+      <div className={`hidden lg:flex justify-center items-center gap-6 px-40 py-1.5 w-fit rounded-xl bg-white/10 backdrop-blur-md shadow-md border border-white/10`}>
+        <div className="flex gap-40">
           <Link to="/" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
             Home
           </Link>
