@@ -2,99 +2,168 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../AuthContext.js';
 import Logo from '../Logo2.png';
-import Profil from '../profil.jpg';
+import Profil from '../profil.jpg';  // Import actual profile picture
+import { FaUserAlt } from 'react-icons/fa';  // Importing a user icon from react-icons
 
 function Navbar() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showNavbar, setShowNavbar] = useState(true); // State to track navbar visibility
+  const [lastScrollY, setLastScrollY] = useState(0); // State to track last scroll position
   const profileRef = useRef(null);
   const { user, logout } = useAuth();
 
+  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setIsProfileMenuOpen(false);
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
+  // Handle scroll event to hide/show navbar
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY) {
+        // Scroll down, hide navbar
+        setShowNavbar(false);
+      } else {
+        // Scroll up, show navbar
+        setShowNavbar(true);
+      }
+      setLastScrollY(window.scrollY); // Update the last scroll position
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastScrollY]);
+
   return (
-    <nav className="fixed top-0 left-0 w-full z-50">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <nav
+      className={`w-full fixed top-0 left-0 z-50 py-4 px-6 flex justify-between items-center transition-all duration-300 ${showNavbar ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`}
+    >
+      {/* Logo */}
+      <div className="flex items-center">
+        <img
+          src={Logo}
+          alt="Logo"
+          className="h-12 w-auto transform hover:scale-110 transition duration-300"
+        />
+      </div>
 
-        {/* Logo */}
-        <Link to="/" className="flex items-center">
-          <img
-            src={Logo}
-            alt="Logo"
-            className="w-12 h-12 hover:scale-110 transition-transform duration-300"
-          />
-        </Link>
-
-        {/* Nav Links with blur background only */}
-        <div className="flex justify-center gap-6 px-6 py-2 rounded-xl bg-white/10 backdrop-blur-md shadow-md">
-          {[
-            { to: '/', label: 'Home' },
-            { to: '/calendar', label: 'Calendar' },
-            ...(user
-              ? [
-                  { to: '/profile', label: 'Profile' },
-                  { to: '/admin', label: 'Admin' }
-                ]
-              : [
-                  { to: '/login', label: 'Login' },
-                  { to: '/Signup', label: 'Register' }
-                ])
-          ].map((link, index) => (
-            <Link
-              key={index}
-              to={link.to}
-              className="text-sm font-medium hover:text-red-500 transition-all duration-300 px-2"
-            >
-              {link.label}
-            </Link>
-          ))}
+      {/* Centered Nav Links for desktop */}
+      <div className={`hidden lg:flex justify-center items-center gap-6 px-40 py-2 w-fit rounded-xl bg-white/10 backdrop-blur-md shadow-md border border-white/0 flex-grow`}>
+        <div className="flex gap-20">
+          <Link to="/" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+            Home
+          </Link>
+          <Link to="/calendar" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+            Calendar
+          </Link>
+          {user ? (
+            <>
+              <Link to="/profile" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+                Profile
+              </Link>
+              <Link to="/admin" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+                Admin
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+                Login
+              </Link>
+              <Link to="/Signup" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+                Register
+              </Link>
+            </>
+          )}
         </div>
+      </div>
 
-        {/* Profile */}
-        {user && (
-          <div className="relative ml-4" ref={profileRef}>
+      {/* Profile Dropdown */}
+      <div className="relative ml-4" ref={profileRef}>
+        {/* Profile Image or React Icon as Placeholder */}
+        <div className="w-12 h-12 rounded-full border-4 border-red-500 cursor-pointer hover:scale-110 hover:border-red-700 transition-all duration-300 flex justify-center items-center">
+          {user ? (
             <img
               src={Profil}
               alt="User Profile"
-              className="w-11 h-11 rounded-full border-2 border-red-600 cursor-pointer transition-transform duration-300 hover:scale-110 hover:border-red-700"
+              className="w-12 h-12 rounded-full"
               onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
             />
+          ) : (
+            <FaUserAlt className="text-white text-xl" onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} />
+          )}
+        </div>
 
-            {isProfileMenuOpen && (
-              <div className="absolute right-0 mt-3 bg-black/90 backdrop-blur-lg text-white rounded-xl shadow-xl w-52 z-50 p-4">
-                <ul className="space-y-2">
-                  <li>
-                    <Link to="/profile" className="block px-3 py-2 rounded hover:bg-gray-800 transition">My Profile</Link>
-                  </li>
-                  <li>
-                    <Link to="/dashboard" className="block px-3 py-2 rounded hover:bg-gray-800 transition">Dashboard</Link>
-                  </li>
-                  <li>
-                    <Link to="/settings" className="block px-3 py-2 rounded hover:bg-gray-800 transition">Settings</Link>
-                  </li>
-                  <li>
-                    <button
-                      onClick={logout}
-                      className="w-full text-left px-3 py-2 rounded hover:bg-gray-800 transition"
-                    >
-                      Logout
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            )}
+        {isProfileMenuOpen && user && ( // Only show profile menu if user is logged in
+          <div className="absolute right-0 mt-2 bg-black text-white p-4 rounded-lg shadow-lg w-48 z-50">
+            <ul>
+              <li>
+                <Link to="/profile" className="block py-2 px-4 hover:bg-gray-700 rounded">My Profile</Link>
+              </li>
+              <li>
+                <Link to="/dashboard" className="block py-2 px-4 hover:bg-gray-700 rounded">Dashboard</Link>
+              </li>
+              <li>
+                <Link to="/settings" className="block py-2 px-4 hover:bg-gray-700 rounded">Settings</Link>
+              </li>
+              <li>
+                <button
+                  onClick={logout}
+                  className="w-full text-left block py-2 px-4 hover:bg-gray-700 rounded"
+                >
+                  Logout
+                </button>
+              </li>
+            </ul>
           </div>
         )}
       </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden absolute top-16 left-0 w-full bg-black p-6">
+          <div className="flex flex-col gap-4">
+            <Link to="/" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+              Home
+            </Link>
+            <Link to="/calendar" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+              Calendar
+            </Link>
+            {user ? (
+              <>
+                <Link to="/profile" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+                  Profile
+                </Link>
+                <Link to="/admin" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+                  Admin
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+                  Login
+                </Link>
+                <Link to="/Signup" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+                  Register
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

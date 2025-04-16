@@ -31,7 +31,7 @@ const Calendar = () => {
   const handleNextWeek = () => setWeekOffset(weekOffset + 1);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white py-12 px-6">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white py-12 px-6 pt-20">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-10">
           <h1 className="text-4xl font-extrabold text-red-500">📅 Live Availability</h1>

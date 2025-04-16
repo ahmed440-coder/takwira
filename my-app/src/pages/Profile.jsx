@@ -34,7 +34,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-red-800 text-white flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-red-800 text-white flex items-center justify-center px-4 py-10 pt-20">
       <div className="w-full max-w-3xl bg-black p-8 rounded-xl shadow-2xl space-y-6">
         <h2 className="text-3xl font-bold text-center">My Profile</h2>
 

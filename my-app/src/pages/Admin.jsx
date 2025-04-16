@@ -15,7 +15,7 @@ const Admin = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white px-6 py-10">
+    <div className="min-h-screen bg-black text-white px-6 py-10 pt-40">
       <h1 className="text-3xl font-bold mb-8 text-red-500">Admin Dashboard</h1>
 
       {/* Stats */}
