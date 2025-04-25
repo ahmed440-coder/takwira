@@ -24,7 +24,7 @@ function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
+          <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight">
             Welcome to Your Ultimate Football Experience
           </h1>
           <motion.p
@@ -39,19 +39,26 @@ function Home() {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 1 }}
+            className="flex justify-center space-x-6"
           >
             <Link
               to="/booking"
-              className="inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+              className="inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
             >
               Book Now
+            </Link>
+            <Link
+              to="/add-stadium"
+              className="inline-block text-red-600 bg-white border-2 border-red-600 font-semibold py-4 px-10 rounded-full text-lg shadow-md hover:bg-red-600 hover:text-white transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              Add Your Stadium
             </Link>
           </motion.div>
         </motion.div>
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-gray-800">
+      <section className="py-20 bg-gray-800">
         <motion.div
           className="container mx-auto px-6 text-center"
           initial={{ opacity: 0 }}
@@ -92,7 +99,7 @@ function Home() {
       </section>
 
       {/* Image Gallery with Fade In */}
-      <section className="py-16 bg-black">
+      <section className="py-20 bg-black">
         <motion.div
           className="container mx-auto px-6 text-center"
           initial={{ opacity: 0 }}
@@ -120,71 +127,70 @@ function Home() {
 
       {/* Testimonials Section */}
       <section className="py-20 bg-gray-900">
-  <div className="container mx-auto px-4 text-center">
-    <motion.h2
-      className="text-4xl md:text-5xl font-extrabold text-red-500 mb-14"
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
-      viewport={{ once: true }}
-    >
-      What Players Are Saying
-    </motion.h2>
+        <div className="container mx-auto px-4 text-center">
+          <motion.h2
+            className="text-4xl md:text-5xl font-extrabold text-red-500 mb-14"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            What Players Are Saying
+          </motion.h2>
 
-    <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-      {[
-        {
-          text: "The booking system is so easy, and I love that I can see live availability!",
-          rating: [<FaStar />, <FaStar />, <FaStar />, <FaStarHalfAlt />, <FaRegStar />],
-          user: "Ahmed R."
-        },
-        {
-          text: "I love checking my stats. It motivates me to play better every day!",
-          rating: [<FaStar />, <FaStar />, <FaStar />, <FaStar />, <FaStar />],
-          user: "Sarah K."
-        },
-        {
-          text: "Super convenient! I can plan my games with friends without calling anyone.",
-          rating: [<FaStar />, <FaStar />, <FaStar />, <FaStar />, <FaRegStar />],
-          user: "Youssef M."
-        },
-        {
-          text: "Clean interface, easy to book, and great customer support.",
-          rating: [<FaStar />, <FaStar />, <FaStar />, <FaStarHalfAlt />, <FaRegStar />],
-          user: "Leila B."
-        },
-        {
-          text: "Nice app but I wish there were more time slots in the evening.",
-          rating: [<FaStar />, <FaStar />, <FaStar />, <FaRegStar />, <FaRegStar />],
-          user: "Mohamed T."
-        },
-        {
-          text: "Love it! Been playing here every week.",
-          rating: [<FaStar />, <FaStar />, <FaStar />, <FaStar />, <FaStar />],
-          user: "Khaled D."
-        }
-      ].map((review, index) => (
-        <motion.div
-          key={index}
-          className="bg-gray-800 p-6 md:p-8 rounded-2xl shadow-md hover:shadow-red-500/30 transition-all duration-300 transform hover:-translate-y-2"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 * index }}
-          viewport={{ once: true }}
-        >
-          <p className="text-gray-300 text-base md:text-lg mb-4">"{review.text}"</p>
-          <div className="flex justify-center mb-2 text-red-500 text-xl space-x-1">
-            {review.rating.map((icon, i) => (
-              <span key={i}>{icon}</span>
+          <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+            {[ 
+              {
+                text: "The booking system is so easy, and I love that I can see live availability!",
+                rating: [<FaStar />, <FaStar />, <FaStar />, <FaStarHalfAlt />, <FaRegStar />],
+                user: "Ahmed R."
+              },
+              {
+                text: "I love checking my stats. It motivates me to play better every day!",
+                rating: [<FaStar />, <FaStar />, <FaStar />, <FaStar />, <FaStar />],
+                user: "Sarah K."
+              },
+              {
+                text: "Super convenient! I can plan my games with friends without calling anyone.",
+                rating: [<FaStar />, <FaStar />, <FaStar />, <FaStar />, <FaRegStar />],
+                user: "Youssef M."
+              },
+              {
+                text: "Clean interface, easy to book, and great customer support.",
+                rating: [<FaStar />, <FaStar />, <FaStar />, <FaStarHalfAlt />, <FaRegStar />],
+                user: "Leila B."
+              },
+              {
+                text: "Nice app but I wish there were more time slots in the evening.",
+                rating: [<FaStar />, <FaStar />, <FaStar />, <FaRegStar />, <FaRegStar />],
+                user: "Mohamed T."
+              },
+              {
+                text: "Love it! Been playing here every week.",
+                rating: [<FaStar />, <FaStar />, <FaStar />, <FaStar />, <FaStar />],
+                user: "Khaled D."
+              }
+            ].map((review, index) => (
+              <motion.div
+                key={index}
+                className="bg-gray-800 p-6 md:p-8 rounded-2xl shadow-md hover:shadow-red-500/30 transition-all duration-300 transform hover:-translate-y-2"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index }}
+                viewport={{ once: true }}
+              >
+                <p className="text-gray-300 text-base md:text-lg mb-4">"{review.text}"</p>
+                <div className="flex justify-center mb-2 text-red-500 text-xl space-x-1">
+                  {review.rating.map((icon, i) => (
+                    <span key={i}>{icon}</span>
+                  ))}
+                </div>
+                <h4 className="text-white font-semibold text-lg">{review.user}</h4>
+              </motion.div>
             ))}
           </div>
-          <h4 className="text-white font-semibold text-lg">{review.user}</h4>
-        </motion.div>
-      ))}
-    </div>
-  </div>
-</section>
-
+        </div>
+      </section>
 
       {/* CTA Section */}
       <motion.section
@@ -201,7 +207,7 @@ function Home() {
           </p>
           <Link
             to="/booking"
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105"
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-4 px-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105"
           >
             Book Now
           </Link>
