@@ -4,10 +4,11 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import dayjs from 'dayjs';
 
-const generateTimeSlots = () => {
+const generateTimeSlots = (selectedDate) => {
   const result = [];
-  let current = dayjs().startOf('day').hour(10).minute(0);
-  const endTime = dayjs().startOf('day').add(1, 'day');
+  const currentDate = dayjs(selectedDate || new Date());
+  let current = currentDate.startOf('day').hour(10).minute(0); // Start from 10:00 AM
+  const endTime = currentDate.add(1, 'day').startOf('day'); // End after 1 day
 
   while (current.isBefore(endTime)) {
     const start = current.format('HH:mm');
@@ -24,21 +25,21 @@ const Booking = () => {
   const queryParams = new URLSearchParams(location.search);
   const prefilledDate = queryParams.get('day');
   const prefilledTime = queryParams.get('time');
+  const stadium = queryParams.get('stadium'); // Extracting stadium name from the query params
 
   const [form, setForm] = useState({
     name: '',
     email: '',
     phone: '',
     date: prefilledDate ? new Date(prefilledDate) : '',
-    timeSlot: prefilledTime ? `${prefilledTime} - ${dayjs(prefilledTime, 'HH:mm').add(90, 'minute').format('HH:mm')}` : '',
+    timeSlot: prefilledTime || '', // Adjusted for time slot input
     notes: '',
   });
 
+  const [timeSlots, setTimeSlots] = useState([]);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  const timeSlots = generateTimeSlots();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -62,6 +63,13 @@ const Booking = () => {
     fetchUserData();
   }, []);
 
+  useEffect(() => {
+    if (form.date) {
+      const availableTimeSlots = generateTimeSlots(form.date);
+      setTimeSlots(availableTimeSlots);
+    }
+  }, [form.date]);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -72,7 +80,7 @@ const Booking = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.phone || !form.date || !form.timeSlot) {
+    if (!form.phone || !form.date || !form.timeSlot) {
       setIsError(true);
       return;
     }
@@ -93,29 +101,28 @@ const Booking = () => {
       <div className="w-full max-w-lg bg-black/80 p-8 rounded-2xl shadow-2xl">
         <h2 className="text-4xl font-extrabold text-center mb-6 text-red-500">🎟️ Book Your Slot</h2>
 
-        {isSuccess && <div className="bg-green-600 text-white p-4 mb-4 rounded-xl shadow-md text-center">✅ Booking Successful!</div>}
+        {isSuccess && (
+          <div className="bg-green-600 text-white p-4 mb-4 rounded-xl shadow-md text-center">
+            ✅ Booking Successful! <br />
+            Stadium: {stadium} <br />
+            Time Slot: {form.timeSlot} <br />
+            Name: {form.name}
+          </div>
+        )}
         {isError && <div className="bg-red-600 text-white p-4 mb-4 rounded-xl shadow-md text-center">❌ Please fill out all fields.</div>}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <input
-            type="text"
-            name="name"
-            placeholder="Full Name"
-            value={form.name}
-            onChange={handleChange}
-            className="w-full p-3 rounded-xl bg-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500"
-            required
-          />
+          {/* Displaying the user's name instead of input */}
+          <div className="w-full p-3 rounded-xl bg-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500">
+            <label className="block text-sm font-semibold text-gray-300">Full Name</label>
+            <p className="text-white mt-1">{form.name}</p> {/* Displaying user's name */}
+          </div>
 
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-            className="w-full p-3 rounded-xl bg-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500"
-            required
-          />
+          {/* Displaying the user's email instead of input */}
+          <div className="w-full p-3 rounded-xl bg-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500">
+            <label className="block text-sm font-semibold text-gray-300">Email</label>
+            <p className="text-white mt-1">{form.email}</p> {/* Displaying user's email */}
+          </div>
 
           <input
             type="tel"
@@ -141,28 +148,18 @@ const Booking = () => {
             />
           </div>
 
-          <select
-            name="timeSlot"
-            value={form.timeSlot}
-            onChange={handleChange}
-            className="w-full p-3 rounded-xl bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
-            required
-          >
-            <option value="">Select Time Slot</option>
-            {timeSlots.map((slot) => (
-              <option key={slot} value={slot}>
-                {slot}
-              </option>
-            ))}
-          </select>
-
-          <textarea
-            name="notes"
-            placeholder="Additional Notes (optional)"
-            value={form.notes}
-            onChange={handleChange}
-            className="w-full p-3 rounded-xl bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
-          />
+          {/* Disabled Time Slot Input */}
+          <div>
+            <label className="text-sm font-semibold text-gray-300">Selected Time Slot</label>
+            <input
+              type="text"
+              name="timeSlot"
+              value={form.timeSlot}
+              onChange={handleChange}
+              disabled
+              className="w-full p-3 mt-2 rounded-xl bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+          </div>
 
           <button
             type="submit"

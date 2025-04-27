@@ -66,8 +66,8 @@ function Navbar() {
           <Link to="/" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
             Home
           </Link>
-          <Link to="/calendar" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
-            Calendar
+          <Link to="/StadiumPreview" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+            Stadium Preview
           </Link>
           {user ? (
             <>
@@ -83,7 +83,7 @@ function Navbar() {
               <Link to="/login" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
                 Login
               </Link>
-              <Link to="/Signup" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+              <Link to="/signup" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
                 Register
               </Link>
             </>
@@ -139,8 +139,8 @@ function Navbar() {
             <Link to="/" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
               Home
             </Link>
-            <Link to="/calendar" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
-              Calendar
+            <Link to="/StadiumPreview" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+              Stadium Preview
             </Link>
             {user ? (
               <>
@@ -156,7 +156,7 @@ function Navbar() {
                 <Link to="/login" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
                   Login
                 </Link>
-                <Link to="/Signup" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
+                <Link to="/signup" className="text-white font-semibold hover:text-red-500 transition-all duration-300">
                   Register
                 </Link>
               </>
@@ -164,6 +164,15 @@ function Navbar() {
           </div>
         </div>
       )}
+
+      {/* Mobile Menu Toggle */}
+      <div className="lg:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+        <button className="text-white">
+          <span className="block w-6 h-0.5 bg-white mb-1"></span>
+          <span className="block w-6 h-0.5 bg-white mb-1"></span>
+          <span className="block w-6 h-0.5 bg-white"></span>
+        </button>
+      </div>
     </nav>
   );
 }

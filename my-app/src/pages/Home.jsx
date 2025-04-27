@@ -48,7 +48,7 @@ function Home() {
               Book Now
             </Link>
             <Link
-              to="/add-stadium"
+              to="/Addstadium"
               className="inline-block text-red-600 bg-white border-2 border-red-600 font-semibold py-4 px-10 rounded-full text-lg shadow-md hover:bg-red-600 hover:text-white transition duration-300 ease-in-out transform hover:scale-105"
             >
               Add Your Stadium

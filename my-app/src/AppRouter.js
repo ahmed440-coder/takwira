@@ -8,6 +8,8 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Booking from './pages/Booking';
+import Addstadium from './pages/AddStadium';
+import StadiumPreview from './pages/StadiumPreview';
 import Navbar from './components/Navbar';
 
 import PrivateRoute from './PrivateRoute';
@@ -32,7 +34,9 @@ const AppRouter = () => {
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/StadiumPreview" element={<StadiumPreview />} />
         <Route path="/booking" element={<Booking />} />
+        <Route path="/Addstadium" element={<Addstadium />} />
       </Route>
 
       {/* 404 fallback */}

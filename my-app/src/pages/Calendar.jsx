@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import dayjs from 'dayjs';
 
+// Stadiums and booked slots data
 const stadiums = ['Stadium A', 'Stadium B', 'Stadium C'];
 
 const allBookedSlots = {
@@ -36,26 +37,39 @@ const times = generateTimeSlots();
 const Calendar = () => {
   const [weekOffset, setWeekOffset] = useState(0);
   const [stadium, setStadium] = useState(stadiums[0]);
+  const [selectedTime, setSelectedTime] = useState(null); // Added state for selected time
   const navigate = useNavigate();
 
+  // Get the stadium from URL query parameters if available
+  const location = useLocation();
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const selectedStadium = queryParams.get('stadium');
+    if (selectedStadium && stadiums.includes(selectedStadium)) {
+      setStadium(selectedStadium);
+    }
+  }, [location]);
+
+  // Get the current week and the list of days
   const startOfWeek = dayjs().startOf('week').add(1, 'day').add(weekOffset, 'week');
   const currentWeekDates = Array.from({ length: 7 }, (_, i) =>
     startOfWeek.add(i, 'day')
   );
 
   const handleBooking = (dateStr, time) => {
+    // Navigate to the booking page with the stadium, date, and time as query parameters
     navigate(`/booking?stadium=${stadium}&day=${dateStr}&time=${time}`);
   };
 
   const handlePreviousWeek = () => setWeekOffset((prev) => prev - 1);
   const handleNextWeek = () => setWeekOffset((prev) => prev + 1);
 
+  // Get the booked slots for the selected stadium
   const bookedSlots = allBookedSlots[stadium] || {};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white py-12 px-4 md:px-8 pt-40">
       <div className="max-w-7xl mx-auto space-y-10">
-        
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="text-center md:text-left">
