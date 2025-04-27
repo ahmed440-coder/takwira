@@ -8,22 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (storedUser) {
-      setUser(storedUser);
-    } else {
-      // Optionally check backend for current session
-      axios.get('http://localhost:8081/api/auth/me', { withCredentials: true })
-        .then(res => {
-          setUser(res.data);
-          localStorage.setItem('user', JSON.stringify(res.data));
-        })
-        .catch(() => {
-          setUser(null);
-        });
-    }
-  }, []);
+  
 
   const login = async (email, password) => {
     try {
@@ -32,7 +17,9 @@ export const AuthProvider = ({ children }) => {
       });
 
       setUser(res.data);
-      localStorage.setItem('user', JSON.stringify(res.data));
+      localStorage.setItem('token', JSON.stringify(res.data));
+      const token = localStorage.getItem('token');
+      console.log("user logged in with the token : ",token);
       navigate('/dashboard');
     } catch (err) {
       console.error('Login failed:', err);
@@ -53,7 +40,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     setUser(null);
-    localStorage.removeItem('user');
+    localStorage.removeItem('token');
     alert("user is out !");
     navigate('/');
   };

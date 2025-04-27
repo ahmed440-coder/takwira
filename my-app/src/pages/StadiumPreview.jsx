@@ -1,53 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-
-import s1 from '../s1.jpg'; // Import stadium images
-import s2 from '../s2.jpg';
-import s3 from '../s3.jpg';
-
-// List of stadiums with details
-const stadiums = [
-  { 
-    name: 'Stadium A', 
-    image: s1, 
-    region: 'Tunis', 
-    description: 'A state-of-the-art stadium located in the heart of Tunis. Perfect for football games and events.',
-    capacity: '5000 seats', 
-    features: ['LED Scoreboard', 'VIP Lounge', 'Free Parking']
-  },
-  { 
-    name: 'Stadium B', 
-    image: s2, 
-    region: 'Sfax', 
-    description: 'A modern stadium with great amenities, ideal for hosting tournaments and community events.',
-    capacity: '4000 seats', 
-    features: ['VIP Seats', 'Large LED Screens', 'Press Box']
-  },
-  { 
-    name: 'Stadium C', 
-    image: s3, 
-    region: 'Nabeul', 
-    description: 'A spacious stadium located by the coast, known for its excellent pitch quality and stunning views.',
-    capacity: '3500 seats', 
-    features: ['Beachfront View', 'Training Grounds', 'Locker Rooms']
-  }
-];
-
-// Booked slots data
-const allBookedSlots = {
-  'Stadium A': {
-    '2025-04-14': ['14:30', '17:30'],
-    '2025-04-15': ['13:00'],
-  },
-  'Stadium B': {
-    '2025-04-18': ['11:30'],
-  },
-  'Stadium C': {
-    '2025-04-20': ['22:00'],
-  },
-};
+import axios from 'axios'; // Import Axios
 
 // 🔁 Generate 1h30min intervals from 10:00 to 00:00
 const generateTimeSlots = () => {
@@ -76,18 +31,18 @@ const Calendar = ({ stadium }) => {
   const handlePreviousWeek = () => setWeekOffset((prev) => prev - 1);
   const handleNextWeek = () => setWeekOffset((prev) => prev + 1);
 
-  const bookedSlots = allBookedSlots[stadium] || {};
+  const bookedSlots = stadium.bookedSlots || {};
 
   const handleBooking = (dateStr, time) => {
     // Redirecting to the booking page with query params
-    navigate(`/booking?stadium=${stadium}&day=${dateStr}&time=${time}`);
+    navigate(`/booking?stadium=${stadium.name}&day=${dateStr}&time=${time}`);
   };
 
   return (
     <div className="space-y-10 mt-10" id="calendar">
       {/* Week navigation */}
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-extrabold text-red-400">{stadium}</h2>
+        <h2 className="text-3xl font-extrabold text-red-400">{stadium.name}</h2>
         <div className="space-x-2">
           <button
             onClick={handlePreviousWeek}
@@ -153,13 +108,26 @@ const Calendar = ({ stadium }) => {
 
 // 🎯 Main StadiumSelection component
 const StadiumSelection = () => {
+  const [stadiums, setStadiums] = useState([]); // Store fetched stadiums
   const [selectedStadium, setSelectedStadium] = useState(null);
   const [currentImage, setCurrentImage] = useState(0);
-
   const calendarRef = useRef(null); // Use useRef for calendar section
 
+  useEffect(() => {
+    axios.get('http://localhost:8081/api/stadiums/getAll') // Replace with actual endpoint
+      .then((response) => {
+        console.log(response.data); // Check the structure of the data
+        setStadiums(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching stadiums:', error);
+      });
+  }, []);
+  
+
   const handleSelectStadium = (stadiumName) => {
-    setSelectedStadium(stadiums.find(s => s.name === stadiumName));
+    const selected = stadiums.find(s => s.name === stadiumName);
+    setSelectedStadium(selected);
     setCurrentImage(0);
   };
 
@@ -189,7 +157,7 @@ const StadiumSelection = () => {
               <div className="w-full max-w-lg bg-black/70 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/10 mx-auto">
                 <h2 className="text-2xl font-bold mb-4 text-center text-white">Détails du stade</h2>
                 <div className="relative w-full h-60 rounded-lg overflow-hidden shadow-lg">
-                  <img src={selectedStadium.image} alt="Stadium" className="object-cover w-full h-full" />
+                  <img src={`data:image/jpeg;base64,${selectedStadium.image}`} alt="Stadium" className="object-cover w-full h-full" />
                 </div>
                 <div className="mt-6 text-white">
                   <p className="text-lg font-semibold">Localisation: {selectedStadium.region}</p>
@@ -244,13 +212,13 @@ const StadiumSelection = () => {
                   onClick={() => handleSelectStadium(stadium.name)}
                 >
                   <img
-                    src={stadium.image}
+                    src={`data:image/jpeg;base64,${stadium.image}`}
                     alt={stadium.name}
                     className="w-full h-56 object-cover"
                   />
                   <div className="p-4 text-center">
                     <h3 className="text-lg font-semibold text-white">{stadium.name}</h3>
-                    <p className="text-sm text-gray-300">{stadium.region}</p>
+                    <p className="text-sm text-gray-300">{stadium.location}</p>
                   </div>
                 </div>
               ))}

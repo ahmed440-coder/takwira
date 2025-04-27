@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const tunisianRegions = [
   "Ariana", "Béja", "Ben Arous", "Bizerte", "Gabès", "Gafsa", "Jendouba",
@@ -21,8 +22,7 @@ function AddStadium() {
   const [region, setRegion] = useState('');
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState('');
-  const [images, setImages] = useState([]);
-  const [currentImage, setCurrentImage] = useState(0);
+  const [image, setImage] = useState(null);
 
   const handleAddSlot = () => {
     if (selectedSlot && !slots.includes(selectedSlot)) {
@@ -36,27 +36,45 @@ function AddStadium() {
   };
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setImages(files.map(file => URL.createObjectURL(file)));
-    setCurrentImage(0);
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ stadiumName, region, slots, images });
-  };
+    const token = localStorage.getItem('token');
 
-  const nextImage = () => {
-    setCurrentImage((prev) => (prev + 1) % images.length);
-  };
+    const formData = new FormData();
+    formData.append('stadiumName', stadiumName);
+    formData.append('region', region);
+    formData.append('slots', JSON.stringify(slots)); // send slots as JSON string
+    if (image) {
+      formData.append('image', image); // append the real file
+    }
 
-  const prevImage = () => {
-    setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
+    try {
+      const response = await axios.post('http://localhost:8081/api/stadiums/add', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: token ? `Bearer ${token}` : undefined,
+        },
+      });
+
+      console.log('Stadium created:', response.data);
+      setStadiumName('');
+      setRegion('');
+      setSlots([]);
+      setImage(null);
+    } catch (error) {
+      console.error('Error creating stadium:', error);
+      alert('Failed to create stadium. Please try again.');
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-red-800 flex items-start justify-center p-6 pt-32 gap-8 flex-wrap">
-      {/* Form Section */}
       <motion.div
         className="w-full max-w-md bg-black/70 p-8 rounded-3xl shadow-2xl border border-white/10"
         initial={{ opacity: 0, y: 50 }}
@@ -64,15 +82,14 @@ function AddStadium() {
         transition={{ duration: 0.6 }}
       >
         <h1 className="text-3xl font-bold text-white mb-8 text-center">Add Your Stadium</h1>
-
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label className="block mb-2 text-sm font-semibold text-gray-300">Stadium Name</label>
             <input
               type="text"
-              placeholder="Enter stadium name"
               value={stadiumName}
               onChange={(e) => setStadiumName(e.target.value)}
+              placeholder="Enter stadium name"
               className="w-full px-4 py-3 rounded-lg bg-gray-800/70 text-white border border-gray-600 focus:outline-none focus:border-red-500"
             />
           </div>
@@ -80,9 +97,9 @@ function AddStadium() {
           <div>
             <label className="block mb-2 text-sm font-semibold text-gray-300">Location</label>
             <select
-              className="w-full px-4 py-3 rounded-lg bg-gray-800/70 text-white border border-gray-600 focus:outline-none focus:border-red-500"
               value={region}
               onChange={(e) => setRegion(e.target.value)}
+              className="w-full px-4 py-3 rounded-lg bg-gray-800/70 text-white border border-gray-600 focus:outline-none focus:border-red-500"
             >
               <option value="" disabled>Select a region</option>
               {tunisianRegions.map((r) => (
@@ -94,9 +111,9 @@ function AddStadium() {
           <div>
             <label className="block mb-2 text-sm font-semibold text-gray-300">Available Time Slots</label>
             <select
-              className="w-full px-4 py-3 rounded-lg bg-gray-800/70 text-white border border-gray-600 focus:outline-none focus:border-red-500"
               value={selectedSlot}
               onChange={(e) => setSelectedSlot(e.target.value)}
+              className="w-full px-4 py-3 rounded-lg bg-gray-800/70 text-white border border-gray-600 focus:outline-none focus:border-red-500"
             >
               <option value="" disabled>Select a time slot</option>
               {timeSlots.map((slot) => (
@@ -132,10 +149,9 @@ function AddStadium() {
           </div>
 
           <div>
-            <label className="block mb-2 text-sm font-semibold text-gray-300">Upload Stadium Images</label>
+            <label className="block mb-2 text-sm font-semibold text-gray-300">Upload Stadium Image (Optional)</label>
             <input
               type="file"
-              multiple
               onChange={handleImageChange}
               className="w-full text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-500 file:text-white hover:file:bg-red-600"
             />
@@ -158,63 +174,24 @@ function AddStadium() {
         </form>
       </motion.div>
 
-      {/* Preview Section */}
       <AnimatePresence>
-        {(stadiumName || region || slots.length > 0 || images.length > 0) && (
+        {(stadiumName || region || slots.length || image) && (
           <motion.div
-            className="w-full max-w-lg bg-black/70 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/10 text-white space-y-4"
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 100 }}
-            transition={{ duration: 0.5 }}
+            className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 p-4 rounded-lg shadow-xl text-white"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
           >
-            <h2 className="text-2xl font-bold mb-4 text-center">Preview</h2>
-
-            {/* Image Carousel */}
-            {images.length > 0 && (
-              <div className="relative w-full h-60 rounded-lg overflow-hidden">
-                <img
-                  src={images[currentImage]}
-                  alt="Stadium Preview"
-                  className="object-cover w-full h-full"
-                />
-                <button
-                  onClick={prevImage}
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-1 rounded-full"
-                >
-                  ‹
-                </button>
-                <button
-                  onClick={nextImage}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-1 rounded-full"
-                >
-                  ›
-                </button>
-                {/* Dots */}
-                <div className="flex justify-center mt-2 space-x-2">
-                  {images.map((_, idx) => (
-                    <div
-                      key={idx}
-                      className={`h-2 w-2 rounded-full ${currentImage === idx ? 'bg-red-500' : 'bg-white/30'}`}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Stadium Details */}
-            {stadiumName && <p><span className="font-semibold">Name:</span> {stadiumName}</p>}
-            {region && <p><span className="font-semibold">Region:</span> {region}</p>}
-            {slots.length > 0 && (
-              <div>
-                <p className="font-semibold">Available Slots:</p>
-                <ul className="list-disc list-inside text-sm">
-                  {slots.map((slot, i) => (
-                    <li key={i}>{slot}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            <h3 className="text-lg font-bold">Preview</h3>
+            <p>{stadiumName && `Stadium Name: ${stadiumName}`}</p>
+            <p>{region && `Region: ${region}`}</p>
+            <ul>
+              {slots.map((slot, index) => (
+                <li key={index}>{slot}</li>
+              ))}
+            </ul>
+            {image && <p>Image Selected: {image.name}</p>}
           </motion.div>
         )}
       </AnimatePresence>
