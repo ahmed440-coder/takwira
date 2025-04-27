@@ -42,7 +42,7 @@ function Home() {
             className="flex justify-center space-x-6"
           >
             <Link
-              to="/booking"
+              to="/StadiumPreview"
               className="inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
             >
               Book Now

@@ -1,6 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import s1 from '../s1.jpg'; // Import stadium images
@@ -68,7 +67,6 @@ const times = generateTimeSlots();
 // 🎯 Calendar component
 const Calendar = ({ stadium }) => {
   const [weekOffset, setWeekOffset] = useState(0);
-  const navigate = useNavigate();
 
   const startOfWeek = dayjs().startOf('week').add(1, 'day').add(weekOffset, 'week');
   const currentWeekDates = Array.from({ length: 7 }, (_, i) => startOfWeek.add(i, 'day'));
@@ -79,12 +77,12 @@ const Calendar = ({ stadium }) => {
   const bookedSlots = allBookedSlots[stadium] || {};
 
   const handleBooking = (dateStr, time) => {
-    // Redirecting to the booking page with query params
-    navigate(`/booking?stadium=${stadium}&day=${dateStr}&time=${time}`);
+    alert(`Réservation : ${stadium} - ${dateStr} à ${time}`);
+    // Ici tu peux ajouter ta vraie logique de réservation
   };
 
   return (
-    <div className="space-y-10 mt-10" id="calendar">
+    <div className="space-y-10 mt-10">
       {/* Week navigation */}
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-extrabold text-red-400">{stadium}</h2>
@@ -156,17 +154,9 @@ const StadiumSelection = () => {
   const [selectedStadium, setSelectedStadium] = useState(null);
   const [currentImage, setCurrentImage] = useState(0);
 
-  const calendarRef = useRef(null); // Use useRef for calendar section
-
   const handleSelectStadium = (stadiumName) => {
     setSelectedStadium(stadiums.find(s => s.name === stadiumName));
     setCurrentImage(0);
-  };
-
-  const scrollToCalendar = () => {
-    if (calendarRef.current) {
-      calendarRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
   };
 
   return (
@@ -214,19 +204,11 @@ const StadiumSelection = () => {
                   >
                     Choisir un autre stade
                   </button>
-                  <button
-                    onClick={scrollToCalendar} // Now this button will trigger scroll
-                    className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-xl transition transform hover:scale-105"
-                  >
-                    Réserver maintenant
-                  </button>
                 </div>
               </div>
 
               {/* Calendar */}
-              <div ref={calendarRef}> {/* Attach ref to the calendar section */}
-                <Calendar stadium={selectedStadium.name} />
-              </div>
+              <Calendar stadium={selectedStadium.name} />
             </motion.div>
           ) : (
             <motion.div
@@ -250,7 +232,7 @@ const StadiumSelection = () => {
                   />
                   <div className="p-4 text-center">
                     <h3 className="text-lg font-semibold text-white">{stadium.name}</h3>
-                    <p className="text-sm text-gray-300">{stadium.region}</p>
+                    <p className="text-sm text-gray-400 mt-2">Cliquez pour sélectionner</p>
                   </div>
                 </div>
               ))}
