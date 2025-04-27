@@ -29,6 +29,10 @@ const Profile = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setEditing(false);
+
+    // Save user data to localStorage
+    localStorage.setItem('userProfile', JSON.stringify(user));
+
     // Save profile logic here
     console.log(user);
   };
